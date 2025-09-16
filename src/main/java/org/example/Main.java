@@ -28,8 +28,8 @@ public class Main {
 //        Dataset<Row> parquetFileDF2 = DatasetGenerator.generateMockData2(spark);
 
         // Reading from existing parquet files
-        String parquetFilePath1 = "src/main/resources/mock_data1.parquet";
-        String parquetFilePath2 = "src/main/resources/mock_data2.parquet";
+        String parquetFilePath1 = "src/main/parquet/mock_data1.parquet";
+        String parquetFilePath2 = "src/main/parquet/mock_data2.parquet";
 
         Dataset<Row> parquetFileDF = spark.read().parquet(parquetFilePath1);
         Dataset<Row> parquetFileDF2 = spark.read().parquet(parquetFilePath2);
