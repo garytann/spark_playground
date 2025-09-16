@@ -23,13 +23,21 @@ public class Main {
                 .getOrCreate();
         System.out.println("Init Mock Data");
 
-        Dataset<Row> parquetFileDF = DatasetGenerator.generateMockData(spark);
-        Dataset<Row> parquetFileDF2 = DatasetGenerator.generateMockData2(spark);
+        // Generating a mock dataset for own testing
+//        Dataset<Row> parquetFileDF = DatasetGenerator.generateMockData(spark);
+//        Dataset<Row> parquetFileDF2 = DatasetGenerator.generateMockData2(spark);
+
+        // Reading from existing parquet files
+        String parquetFilePath1 = "src/main/resources/mock_data1.parquet";
+        String parquetFilePath2 = "src/main/resources/mock_data2.parquet";
+
+        Dataset<Row> parquetFileDF = spark.read().parquet(parquetFilePath1);
+        Dataset<Row> parquetFileDF2 = spark.read().parquet(parquetFilePath2);
+
 
 //        ## 1.1 Display dataframes
         parquetFileDF.show();
         parquetFileDF2.show();
-//        Dataset<String> logData = spark.read().textFile(logFile).cache();
 
         // ## 2. Init RDD Spark session
 //        System.out.println("Init Spark Context");
