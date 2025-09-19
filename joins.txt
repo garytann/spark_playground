@@ -1,0 +1,50 @@
+import org.apache.spark.sql.SparkSession
+import spark.implicits._
+
+val spark = SparkSession
+  .builder()
+  .appName("Spark SQL basic example")
+  .config("spark.some.config.option", "some-value")
+  .getOrCreate()
+
+val df = spark.read.parquet("src/main/parquet/mock_data1.parquet")
+val df2 = spark.read.parquet("src/main/parquet/mock_data2.parquet")
+
+
+-- inner join meant that only geographical_location that is associated with geographical_location_oid will be joined with df.
+val innerJoinStmt = "SELECT df.geographical_location_oid, geographical_location, item_name 
+		FROM df 
+		INNER JOIN df2 
+		ON df.geographical_location_oid = df2.geographical_location_oid;"
+
+-- left join meant that both tables will be joined, however, for geographical_location without the associated geographical_location_oid they wont be mapped, 
+-- and will be labeled as "NULL" 
+val leftJoinStmt = "SELECT df.geographical_location_oid, geographical_location, item_name
+		FROM df
+                LEFT JOIN df2
+                ON df.geographical_location_oid = df2.geographical_location_oid;"
+
+
+-- right join is kind of similar to inner join, however, it only returns all rows from df2
+val rightJoinStmt = "SELECT df.geographical_location_oid, geographical_location, item_name
+                FROM df 
+                RIGHT JOIN df2
+                ON df.geographical_location_oid = df2.geographical_location_oid;"
+
+
+-- it is the effect of both left and right join, therefore it will return everything from both dataframes
+-- columns with no matches will be labeled as "NULL"
+val fullJoinStmt = "SELECT df.geographical_location_oid, geographical_location, item_name
+                FROM df
+                FULL JOIN df2
+                ON df.geographical_location_oid = df2.geographical_location_oid;"
+
+-- cross join creates a cartesian product of 2 tables, it returns every possible combinations of rows
+-- each item name will be mapped to a geographical location
+-- therefore, this will be the preferred join method for this exercise 
+val crossJoinStmt = "SELECT df.geographical_location_oid, geographical_location, item_name
+                FROM df
+                CROSS JOIN df2;
+
+
+
