@@ -70,6 +70,8 @@ public class LocationRankingController {
             int rankCount = 1;
             for (Tuple2<String, Integer> item : items) {
                 LocationRankingModel model = new LocationRankingModel();
+                // This allows for more aggregation in the future if needed by
+                // using the model to add in the column as required
                 model.setGeographicalLocation(location);
                 model.setItemName(item._1);
                 model.setRank(rankCount);
