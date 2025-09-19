@@ -23,13 +23,49 @@ public class Main {
                 .getOrCreate();
         System.out.println("Init Mock Data");
 
+        // Default value
+        int topX = 3;
+        String parquetFilePath1 = "src/main/parquet/mock_data1.parquet";
+        String parquetFilePath2 = "src/main/parquet/mock_data2.parquet";
+        String outputFilePath = "src/main/parquet/output_location_ranking.parquet";
+
+        // Reading from arg
+        if (args.length > 0) {
+            try {
+                topX = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format for topX. Using default value of 3.");
+            }
+        }
+        if (args.length > 1) {
+            try{
+                parquetFilePath1 = args[1];
+
+            } catch (Exception e){
+                System.err.println("Invalid path for parquetFilePath1. Using default path.");
+            }
+        }
+        if (args.length > 2) {
+            try{
+                parquetFilePath2 = args[2];
+            } catch (Exception e){
+                System.err.println("Invalid path for parquetFilePath2. Using default path.");
+            }
+        }
+
+        if (args.length > 3){
+            try{
+                outputFilePath = args[3];
+            } catch (Exception e){
+                System.err.println("Invalid path for outputFilePath. Using default path.");
+            }
+        }
+
         // Generating a mock dataset for own testing
 //        Dataset<Row> parquetFileDF = DatasetGenerator.generateMockData(spark);
 //        Dataset<Row> parquetFileDF2 = DatasetGenerator.generateMockData2(spark);
 
-        // Reading from existing parquet files
-        String parquetFilePath1 = "src/main/parquet/mock_data1.parquet";
-        String parquetFilePath2 = "src/main/parquet/mock_data2.parquet";
+
 
         Dataset<Row> parquetFileDF = spark.read().parquet(parquetFilePath1);
         Dataset<Row> parquetFileDF2 = spark.read().parquet(parquetFilePath2);
@@ -52,7 +88,7 @@ public class Main {
         // Transforation: ensure all columns are distinct
         JavaRDD<Row> distinctDF = df.distinct();
 
-        JavaRDD<LocationRankingModel> locationRankingRDD = LocationRankingController.getLocationRanking(distinctDF, df2, 3);
+        JavaRDD<LocationRankingModel> locationRankingRDD = LocationRankingController.getLocationRanking(distinctDF, df2, topX);
 
         // Define the encoder for LocationRankingModel
         Encoder<LocationRankingModel> rankingEncoder = Encoders.bean(LocationRankingModel.class);
@@ -62,6 +98,11 @@ public class Main {
 
         // Show the Dataset
         javaBeanDS.show();
+
+        // Save as Parquet (overwrite if exists)
+        javaBeanDS.write()
+                .mode(SaveMode.Overwrite)
+                .parquet(outputFilePath);
 
 
         spark.stop();
