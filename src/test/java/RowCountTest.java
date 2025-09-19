@@ -31,7 +31,20 @@ public class RowCountTest {
     }
 
     @Test
-    public void testWordCountOnMockData() {
+    public void testWordCountOnMockData1() {
+        Dataset<Row> df = DatasetGenerator.generateMockData(spark);
+        JavaRDD<Row> javaDF = df.javaRDD();
+
+        JavaPairRDD<Long, String> itemNameMap = javaDF
+                .mapToPair(row -> new Tuple2<>(
+                        row.getLong(row.fieldIndex("geographical_location_oid")),
+                        row.getString(row.fieldIndex("item_name"))));
+        assertEquals(54, itemNameMap.count());
+
+    }
+
+    @Test
+    public void testWordCountOnMockData2() {
         Dataset<Row> df = DatasetGenerator.generateMockData2(spark);
         JavaRDD<Row> javaDF = df.javaRDD();
 
